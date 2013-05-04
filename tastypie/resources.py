@@ -1878,6 +1878,9 @@ class ModelResource(Resource):
             if f.has_default():
                 kwargs['default'] = f.default
 
+            if f.choices:
+                kwargs['choices'] = f.choices
+
             if getattr(f, 'auto_now', False):
                 kwargs['default'] = f.auto_now
 
