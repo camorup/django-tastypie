@@ -3,7 +3,7 @@ from dateutil.parser import parse
 from decimal import Decimal
 import re
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.utils import datetime_safe, importlib
+from django.utils import datetime_safe, importlib, timezone
 from django.core.urlresolvers import resolve
 from tastypie.bundle import Bundle
 from tastypie.exceptions import ApiFieldError, NotFound
@@ -376,6 +376,10 @@ class DateTimeField(ApiField):
 
     def hydrate(self, bundle):
         value = super(DateTimeField, self).hydrate(bundle)
+
+        # FIX: do we need a better check? query settings for datetime formatting?
+        if isinstance(value, int):
+            return datetime.datetime.utcfromtimestamp(value).replace(tzinfo = timezone.UTC())
 
         if value and not hasattr(value, 'year'):
             try:
