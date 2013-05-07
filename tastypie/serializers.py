@@ -134,6 +134,14 @@ class Serializer(object):
 
         Default is ``iso-8601``, which looks like "2010-12-16T03:02:14".
         """
+
+        if self.datetime_formatting == 'utc-seconds':
+            if data.tzinfo is None:
+                return int(time.mktime((data.year, data.month, data.day, data.hour, data.minute, data.second, -1, -1, -1)))
+            else:
+                _EPOCH = datetime.datetime (1970, 1, 1, tzinfo = django.utils.timezone.UTC())
+                return int((data - _EPOCH).total_seconds())
+
         data = make_naive(data)
         if self.datetime_formatting == 'rfc-2822':
             return format_datetime(data)
